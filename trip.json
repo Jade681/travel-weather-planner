@@ -1,0 +1,12 @@
+{
+    "name": "My Trip",
+    "startdate": "2026-09-10",
+    "enddate": "2026-09-12",
+    "locations": [
+        {
+            "name": "Shanghai",
+            "latitude": 31.22222,
+            "longitude": 121.45806
+        }
+    ]
+}
