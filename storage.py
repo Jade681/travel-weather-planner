@@ -18,12 +18,12 @@ def trip_to_dict(trip):
 
 def save_trip(trip):
     data=trip_to_dict(trip)
-    with open(f"trip.json", "w") as f:
+    with open(f"data/trip.json", "w") as f:
         json.dump(data, f, indent=4)
 
 def load_trip():
     try:
-        with open("trip.json", "r") as f:
+        with open("data/trip.json", "r") as f:
             data = json.load(f)
            
             
