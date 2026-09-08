@@ -24,11 +24,10 @@ else:
     save_trip(trip)
 
 loaded_trip = load_trip()
-for one_trip in loaded_trip:
-    one_trip.show_locations()
 
-
-
+for index, trip in enumerate(loaded_trip, start=1):
+    print(f"{index}.")
+    trip.show_locations()
 weather = get_weather(
     city_location.latitude,
     city_location.longitude,
