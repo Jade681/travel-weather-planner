@@ -46,4 +46,13 @@ class Trip:
                 print(f"{location_name} has been removed from the trip.")
                 return
         print(f"{location_name} not found in the trip.")
-             
+
+
+    def find_location(self, location_name): #查找旅行地点
+        for location in self.locations:
+            if location.name == location_name:
+                print(f"Found: {location}")
+                return location
+        else:
+            print(f"You didn't add {location_name} to the trip yet. Please add it first.")
+            return None
