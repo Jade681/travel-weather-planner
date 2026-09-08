@@ -56,7 +56,12 @@ def get_weather(latitude, longitude,startdate, enddate):
     response = requests.get(url, params=params)
     data = response.json()
     
-    daily_weather = data["daily"]
+    
+    if "daily" not in data:
+            print("Weather data is not available for the specified location and date range.")
+            return None
+    else:
+        daily_weather = data["daily"]
     dates = daily_weather["time"]
     max_temperatures = daily_weather["temperature_2m_max"]
     min_temperatures = daily_weather["temperature_2m_min"]
