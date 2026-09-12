@@ -1,74 +1,59 @@
-import json
+import sqlite3
 from models import Trip, Location
-def  location_to_dict(location):
-    return {
-        "name":location.name,
-        "latitude": location.latitude,
-        "longitude": location.longitude,
-    }
+
+conn = sqlite3.connect("data/trips.db")
+cursor = conn.cursor()
+
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS trips (
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        startdate TEXT,
+        enddate TEXT
+    )
+""")
 
 
-def trip_to_dict(trip):
-    return {
-        "name": trip.name,
-        "startdate": trip.startdate,
-        "enddate": trip.enddate,
-        "locations": [location_to_dict(location) for location in trip.locations]
-    }
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS locations (
+        id INTEGER PRIMARY KEY,
+        trip_id INTEGER,
+        name TEXT,
+        latitude REAL,
+        longitude REAL,
+        FOREIGN KEY (trip_id) REFERENCES trips(id)
+    )
+""")
+    
+def save_trip(trip):    
+    cursor.execute("INSERT INTO trips (name, startdate, enddate) VALUES (?, ?, ?)", (trip.name, trip.startdate, trip.enddate))
+    trip_id = cursor.lastrowid
 
-def save_trip(trip):
-    trips = existing_trips()
-    trips.append(trip_to_dict(trip))
-    with open(f"data/trip.json", "w") as f:
-        json.dump(trips, f, indent=4)
+    for location in trip.locations:
+        cursor.execute("INSERT INTO locations (trip_id, name,latitude, longitude) VALUES (?,?,?,?)",
+                    (trip_id,location.name,location.latitude,location.longitude))
 
+    conn.commit()
+   
 def load_trip():
-    try:
-        with open("data/trip.json", "r") as f:
-            data = json.load(f)
-           
-            
-    except FileNotFoundError:
-        print("No saved trip found.")
-        return None 
-    except json.JSONDecodeError:
-        print("The saved trip file is corrupted.")
-        return None
     all_trips = []
-    for single_trip in data:
-         trip = Trip(single_trip["name"],
 
-                single_trip["startdate"],
+    cursor.execute("SELECT * FROM trips")
+    trip_rows = cursor.fetchall()
 
-                single_trip["enddate"])
+    for trip_row in trip_rows:
+        # trip_row 长这样：(id, name, startdate, enddate)
+        trip = Trip(trip_row[1], trip_row[2], trip_row[3])   # 取出 name, startdate, enddate
+        this_trip_id = trip_row[0]                            # 取出 id，等下查它的地点要用
 
-         for location_data in single_trip["locations"]:
+        cursor.execute("SELECT * FROM locations WHERE trip_id = ?", (this_trip_id,))
+        location_rows = cursor.fetchall()
 
-                location = Location(
+        for location_row in location_rows:
+            # location_row 长这样：(id, trip_id, name, latitude, longitude)
+            location = Location(location_row[2], location_row[3], location_row[4])   # 你来填：取出 name, latitude, longitude
+            trip.locations.append(location)
 
-        location_data["name"],
+        all_trips.append(trip)
 
-        location_data["latitude"],
-
-        location_data["longitude"])
-
-                trip.locations.append(location)
-         all_trips.append(trip)
-    return all_trips
-
-
-
-def existing_trips():
-    try:
-        with open("data/trip.json", "r") as f:
-            data = json.load(f)
-            
-    except FileNotFoundError:
-        print("No saved trip found.")
-        data=[]
-        return data
-    except json.JSONDecodeError:
-        print("The saved trip file is corrupted.")
-        return []
-
-    return data  
+    return all_trips   
