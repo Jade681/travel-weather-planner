@@ -5,12 +5,20 @@ conn = sqlite3.connect("data/trips.db")
 cursor = conn.cursor()
 
 cursor.execute("""
+               CREATE TABLE IF NOT EXISTS users(
+                   id INTEGER PRIMARY KEY,
+                   name TEXT)
+                   """)
+
+
+cursor.execute("""
     CREATE TABLE IF NOT EXISTS trips (
         id INTEGER PRIMARY KEY,
         name TEXT,
         startdate TEXT,
-        enddate TEXT
-    )
+        enddate TEXT,
+        user_id INTEGER,
+        FOREIGN KEY (user_id) REFERENCES users(id))
 """)
 
 
@@ -24,9 +32,16 @@ cursor.execute("""
         FOREIGN KEY (trip_id) REFERENCES trips(id)
     )
 """)
+
+
+def save_user(name):
+    cursor.execute("INSERT INTO users (name) VALUES (?)",(name,))
+    conn.commit() 
+    return cursor.lastrowid  # 返回新插入的用户的ID
+       
+def save_trip(trip): 
     
-def save_trip(trip):    
-    cursor.execute("INSERT INTO trips (name, startdate, enddate) VALUES (?, ?, ?)", (trip.name, trip.startdate, trip.enddate))
+    cursor.execute("INSERT INTO trips (name, startdate, enddate, user_id) VALUES (?, ?, ?, ?)", (trip.name, trip.startdate, trip.enddate, trip.userid))
     trip_id = cursor.lastrowid
 
     for location in trip.locations:
@@ -43,7 +58,7 @@ def load_trip():
 
     for trip_row in trip_rows:
         # trip_row 长这样：(id, name, startdate, enddate)
-        trip = Trip(trip_row[1], trip_row[2], trip_row[3])   # 取出 name, startdate, enddate
+        trip = Trip(trip_row[4], trip_row[1], trip_row[2], trip_row[3])   # 取出 user_id, name, startdate, enddate
         this_trip_id = trip_row[0]                            # 取出 id，等下查它的地点要用
 
         cursor.execute("SELECT * FROM locations WHERE trip_id = ?", (this_trip_id,))

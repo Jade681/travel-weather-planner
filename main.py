@@ -1,11 +1,12 @@
 from models import Location, Trip
-from storage import save_trip,load_trip
+from storage import save_trip,load_trip,save_user
 from weather import search_city,get_weather
 
+User_ID=save_user(input("Please enter your name: "))
 Trip_Name = input("Please enter the name of your trip: ")
 Start_Date = input("Please enter the start date of your trip (YYYY-MM-DD): ")
 End_Date = input("Please enter the end date of your trip (YYYY-MM-DD): ")
-trip = Trip(Trip_Name, Start_Date, End_Date)
+trip = Trip(User_ID, Trip_Name, Start_Date, End_Date)
 
 while True:
     locations=input("Please enter the name of a city you want to visit (or type 'done' to finish): ")

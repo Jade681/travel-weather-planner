@@ -9,7 +9,8 @@ class Location:
 
 class Trip:
     
-    def __init__(self, name,startdate,enddate): #创建旅行计划
+    def __init__(self, userid,name,startdate,enddate): #创建旅行计划
+        self.userid = userid
         self.name = name
         self.startdate=startdate
         self.enddate=enddate
