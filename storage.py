@@ -35,9 +35,14 @@ cursor.execute("""
 
 
 def save_user(name):
-    cursor.execute("INSERT INTO users (name) VALUES (?)",(name,))
-    conn.commit() 
-    return cursor.lastrowid  # 返回新插入的用户的ID
+    cursor.execute("SELECT * FROM users WHERE name = ?", (name,))
+    existing_user=cursor.fetchone()
+    if existing_user is  None:
+        cursor.execute("INSERT INTO users (name) VALUES (?)",(name,))
+        conn.commit() 
+        return cursor.lastrowid  # 返回新插入的用户的ID
+    else:
+        return existing_user[0]  # 返回已存在用户的ID
        
 def save_trip(trip): 
     
@@ -50,10 +55,10 @@ def save_trip(trip):
 
     conn.commit()
    
-def load_trip():
+def load_trip(user_id):
     all_trips = []
 
-    cursor.execute("SELECT * FROM trips")
+    cursor.execute("SELECT * FROM trips WHERE user_id =?",(user_id,))
     trip_rows = cursor.fetchall()
 
     for trip_row in trip_rows:

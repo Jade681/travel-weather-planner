@@ -1,0 +1,13 @@
+import os
+import sys
+
+# 因为本文件在 tests/ 子文件夹里，需要把项目根目录加入模块搜索路径，
+# 否则 import storage 会报 ModuleNotFoundError。
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import storage
+
+# 验证 save_user 的 get-or-create：同一个名字连续保存两次，
+# 两次返回的 id 应该相同（说明复用了已有用户，没有重复创建）。
+print(storage.save_user("Alice"))
+print(storage.save_user("Alice"))

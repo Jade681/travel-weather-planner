@@ -25,7 +25,7 @@ while True:
 
 save_trip(trip)
 
-loaded_trip = load_trip()
+loaded_trip = load_trip(User_ID)
 
 for index, loaded_t in enumerate(loaded_trip, start=1):
     print(f"{index}.")

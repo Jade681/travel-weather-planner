@@ -1,0 +1,52 @@
+import os
+import sys
+
+# This test file lives in tests/, so we need to add the project root
+# to the module search path. Otherwise "import storage" raises
+# ModuleNotFoundError.
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import storage
+
+# ---------------------------------------------------------------
+# Part 1: ground truth
+# Query the trips table directly and print id, name, user_id.
+# This is the "expected answer" we compare against later.
+# ---------------------------------------------------------------
+storage.cursor.execute("SELECT id, name, startdate, enddate, user_id FROM trips")
+ts = storage.cursor.fetchall()
+print("Trips in the database:", ts)
+
+# ---------------------------------------------------------------
+# Part 2: call the function under test
+# Call storage.load_trip(...) for two different users and print
+# what comes back.
+# ---------------------------------------------------------------
+alice_trips = storage.load_trip(1)
+print("Trips loaded for user 1:")
+for t in alice_trips:
+    print("  -", t.name, "| belongs to user", t.userid)
+
+bob_trips = storage.load_trip(2)
+print("Trips loaded for user 2:")
+for t in bob_trips:
+    print("  -", t.name, "| belongs to user", t.userid)
+
+# ---------------------------------------------------------------
+# Part 3: automatic assertions
+# If everything is correct, nothing happens here and the final
+# line prints PASSED. If something is wrong, Python raises an
+# AssertionError and tells us exactly which check failed.
+# ---------------------------------------------------------------
+assert len(alice_trips) == 2, "User 1 should have exactly 2 trips"
+assert len(bob_trips) == 1, "User 2 should have exactly 1 trip"
+
+for t in alice_trips:
+    assert t.userid == 1, "load_trip(1) returned a trip belonging to another user"
+
+for t in bob_trips:
+    assert t.userid == 2, "load_trip(2) returned a trip belonging to another user"
+
+assert len(alice_trips) + len(bob_trips) == len(ts), "Both users together should have all the trips"
+
+print("PASSED: load_trip filters by user_id correctly")

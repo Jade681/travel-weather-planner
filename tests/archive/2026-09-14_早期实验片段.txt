@@ -1,0 +1,25 @@
+# 归档：2026-09-14 及之前的早期实验片段（原 check_schema.py 里的注释代码）
+# 保留原因：这些是当时真实跑过的验证步骤，有回顾价值。
+# 注意：里面 load_trip() 是旧签名（无参数），现在已改成 load_trip(user_id)，
+#      直接取消注释运行会报错——这里只作存档，不参与运行。
+
+
+# from models import Location, Trip
+
+# storage.cursor.execute("PRAGMA table_info(trips)")
+# print(storage.cursor.fetchall())
+
+# storage.cursor.execute("PRAGMA table_info(users)")
+# print(storage.cursor.fetchall())
+
+# my_trip = Trip(1,"test trip", "2026-09-20", "2026-09-25")
+# location1=Location("New York", 40.7128, -74.0060)
+
+# my_trip.add_location(location1)
+# storage.save_trip(my_trip)
+# loaded_trips = storage.load_trip()
+# for t in loaded_trips:
+#     print(t.userid)
+#     t.show_locations()
+
+
