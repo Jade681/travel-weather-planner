@@ -1,6 +1,6 @@
 from models import Location, Trip
 from storage import save_trip,load_trip,save_user
-from weather import search_city,get_weather
+from weather import search_city,get_weather,WEATHER_CODES
 
 User_ID=save_user(input("Please enter your name: "))
 Trip_Name = input("Please enter the name of your trip: ")
@@ -32,9 +32,17 @@ for index, loaded_t in enumerate(loaded_trip, start=1):
     loaded_t.show_locations()
 
 for location in trip.locations:
-    weather = get_weather(
+    weather_data = get_weather(
         location.latitude,
         location.longitude,
         trip.startdate,
         trip.enddate
     )
+    if weather_data is None:                 # ① 拦住取不到数据的情况
+        print(f"Weather data is not available for {location.name}. Please check the date range.")
+        continue                        # 去下一个城市
+
+    for time,weather_code,max_temp,min_temp in zip(weather_data["time"], weather_data["weather_code"], weather_data["temperature_2m_max"],weather_data["temperature_2m_min"]):   # ② 列拼成行
+        description = WEATHER_CODES.get(weather_code, "Unknown")                    # ③ 码变人话
+             
+        print(f"City: {location.name}; Date: {time}; Weather: {description}; Max/Min: {max_temp}/{min_temp}°C")
