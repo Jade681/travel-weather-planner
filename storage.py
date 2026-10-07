@@ -1,8 +1,15 @@
 import sqlite3
+import os
 from models import Trip, Location
 
-conn = sqlite3.connect("data/trips.db")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "data", "trips.db")
+os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+
+conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
+conn.execute("PRAGMA foreign_keys = ON")
 
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS users(
@@ -76,4 +83,4 @@ def load_trip(user_id):
 
         all_trips.append(trip)
 
-    return all_trips   
+    return all_trips

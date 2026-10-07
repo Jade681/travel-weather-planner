@@ -19,41 +19,33 @@ class Trip:
 
     def add_location(self, location): #添加旅行地点
         if not location.name.strip():
-            print("Location name cannot be empty.")
-            return
+            return "Location name cannot be empty."
         if not isinstance(location.latitude, (int, float)):
-            print("Latitude must be a number.")
-            return
+            return "Latitude must be a number."
         if not isinstance(location.longitude, (int, float)):
-            print("Longitude must be a number.")
-            return
+            return "Longitude must be a number."
         for existing_location in self.locations: #防止重复地点
             if location.name ==existing_location.name:
-                
-                print(f"{location.name} is already in the trip.")
-                return
+                return f"{location.name} is already in the trip."
         self.locations.append(location)
-        print(f"{location.name} has been added to the trip.")
+        return f"{location.name} has been added to the trip."
 
     def show_locations(self): #查看地点
-        print(f"Trip(name={self.name}）")
+        lines = [f"Trip(name={self.name})"]
         for index, location in enumerate(self.locations, start=1):
-            print(f"{index}. {location}")
+            lines.append(f"{index}. {location}")
+        return "\n".join(lines)
 
     def remove_location(self, location_name): #删除旅行地点
         for location in self.locations:
             if location.name == location_name:
                 self.locations.remove(location)
-                print(f"{location_name} has been removed from the trip.")
-                return
-        print(f"{location_name} not found in the trip.")
+                return f"{location_name} has been removed from the trip."
+        return f"{location_name} not found in the trip."
 
 
     def find_location(self, location_name): #查找旅行地点
         for location in self.locations:
             if location.name == location_name:
-                print(f"Found: {location}")
                 return location
-        else:
-            print(f"You didn't add {location_name} to the trip yet. Please add it first.")
-            return None
+        return None

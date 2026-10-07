@@ -2,3 +2,6 @@
 __pycache__/
 *.code-workspace
 *.db
+.env
+venv/
+.venv/
